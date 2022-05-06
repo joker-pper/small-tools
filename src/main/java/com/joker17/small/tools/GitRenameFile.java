@@ -1,6 +1,8 @@
 package com.joker17.small.tools;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class GitRenameFile {
@@ -70,8 +72,17 @@ public class GitRenameFile {
                 try {
                     if (IS_WINDOWS) {
                         runCmd(String.format("cmd /c cd %s & git mv %s %s", projectDirAbsolutePath, oldFileName, newFileName));
+                    } else {
+                        //生成临时sh文件进行执行
+                        File bashFile = File.createTempFile(String.format("%s-%s", "git-rename-file", UUID.randomUUID().toString().replace("-", "")), ".sh");
+                        try {
+                            String bashContent = String.format("#!/bin/bash\r\ncd %s & git mv %s %s", projectDirAbsolutePath, oldFileName, newFileName);
+                            Files.write(bashFile.toPath(), bashContent.getBytes());
+                            runCmd(String.format("sh %s", bashFile.getAbsolutePath()));
+                        } finally {
+                            bashFile.delete();
+                        }
                     }
-
                     //输出成功处理的文件信息
                     System.out.printf("file renamed success:\n \tbefore: %s\n \tafter: %s%n", oldFileName, newFileName);
 
@@ -81,7 +92,10 @@ public class GitRenameFile {
                         System.err.printf("file renamed fail(because it's not under version control file):\n \tbefore: %s\n \tafter: %s%n", oldFileName, newFileName);
                     } else {
                         //抛出异常
-                        throw ex;
+                        if (ex instanceof RuntimeException) {
+                            throw (RuntimeException) ex;
+                        }
+                        throw new RuntimeException(ex);
                     }
 
                 }
