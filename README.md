@@ -43,31 +43,31 @@
   +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
   ``` 
   
-  + GitRenameFile
-    - git文件重命名,可以指定相关文件的名称,示例:
-  
-    ``` 
-          //git项目根目录
-          File projectDir = new File(System.getProperty("user.dir"));
-          File targetDir = new File(projectDir, "target");
++ GitRenameFile
+  - git文件重命名,可以指定相关文件的名称,示例:
 
-          GitRenameFile.of(projectDir).renameFiles((file -> {
-              if (file.getAbsolutePath().contains(targetDir.getAbsolutePath())) {
-                  //target目录时不处理
-                  return null;
-              }
+  ``` 
+        //git项目根目录
+        File projectDir = new File(System.getProperty("user.dir"));
+        File targetDir = new File(projectDir, "target");
 
-              if (file.getName().endsWith(".jpeg")) {
-                  //处理相关的文件进行重命名
-                  return new File(file.getAbsolutePath().replace(".jpeg", "_new.jpeg"));
-              }
-              return null;
-          }));
-    ``` 
-  
-    ``` 
+        GitRenameFile.of(projectDir).renameFiles((file -> {
+            if (file.getAbsolutePath().contains(targetDir.getAbsolutePath())) {
+                //target目录时不处理
+                return null;
+            }
+
+            if (file.getName().endsWith(".jpeg")) {
+                //处理相关的文件进行重命名
+                return new File(file.getAbsolutePath().replace(".jpeg", "_new.jpeg"));
+            }
+            return null;
+        }));        
+  ``` 
+
+  ``` 
     file renamed success:
-       before: src\test\resources\git-rename-file\f3c619599d45f5ae0ab3a165d842c8f7.jpeg
-       after: src\test\resources\git-rename-file\f3c619599d45f5ae0ab3a165d842c8f7_new.jpeg
+      before: src\test\resources\git-rename-file\f3c619599d45f5ae0ab3a165d842c8f7.jpeg
+      after: src\test\resources\git-rename-file\f3c619599d45f5ae0ab3a165d842c8f7_new.jpeg
+  ``` 
 
-    ``` 
